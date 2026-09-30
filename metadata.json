@@ -1,0 +1,8 @@
+{
+  "name": "Remix Satta King",
+  "description": "Live Satta King market results, record charts, search, and real-time admin management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

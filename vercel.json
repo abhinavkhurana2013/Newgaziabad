@@ -1,0 +1,57 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/new-ghaziabad", "destination": "/new-ghaziabad.html" },
+    { "source": "/new-ghaziabad.html", "destination": "/new-ghaziabad.html" },
+    { "source": "/chart", "destination": "/chart.html" },
+    { "source": "/chart.html", "destination": "/chart.html" },
+    { "source": "/disawer", "destination": "/disawer.html" },
+    { "source": "/disawar", "destination": "/disawar.html" },
+    { "source": "/delhi-noon", "destination": "/delhi-noon.html" },
+    { "source": "/dehli-noon", "destination": "/dehli-noon.html" },
+    { "source": "/punjab-day", "destination": "/punjab-day.html" },
+    { "source": "/faridabad", "destination": "/faridabad.html" },
+    { "source": "/new-faridabad", "destination": "/new-faridabad.html" },
+    { "source": "/gaziabad", "destination": "/gaziabad.html" },
+    { "source": "/ghaziabad", "destination": "/ghaziabad.html" },
+    { "source": "/new-gaziabad", "destination": "/new-gaziabad.html" },
+    { "source": "/new-ghaziabad-chart", "destination": "/new-ghaziabad-chart.html" },
+    { "source": "/gali", "destination": "/gali.html" }
+  ],
+  "headers": [
+    {
+      "source": "/OneSignalSDKWorker.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    }
+  ]
+}
