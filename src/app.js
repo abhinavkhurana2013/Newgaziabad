@@ -905,19 +905,19 @@ function setupRefreshButton() {
 }
 
 const PAGE_TITLES = {
-  home: '[NEW GAZIABAD]',
-  about: 'About – NEW GAZIABAD Live Market Results & Records Information',
-  contact: 'Contact Us – NEW GAZIABAD Help & Support',
-  privacy: 'Privacy Policy – NEW GAZIABAD',
-  terms: 'Terms & Conditions – NEW GAZIABAD'
+  home: 'NEW GAZIABAD RESULTS – Latest Results & Updates',
+  about: 'About – NEW GAZIABAD RESULTS Live Market Results & Records Information',
+  contact: 'Contact Us – NEW GAZIABAD RESULTS Help & Support',
+  privacy: 'Privacy Policy – NEW GAZIABAD RESULTS',
+  terms: 'Terms & Conditions – NEW GAZIABAD RESULTS'
 };
 
 const PAGE_DESCRIPTIONS = {
-  home: 'Get the latest updates and results daily.',
-  about: 'Learn about NEW GAZIABAD, our live market results platform, historical chart data, and market draw timing schedules.',
-  contact: 'Get in touch with NEW GAZIABAD for technical support, feedback, and general inquiries.',
-  privacy: 'Read the NEW GAZIABAD Privacy Policy regarding user privacy, cookies, data collection, and security.',
-  terms: 'Read the NEW GAZIABAD Terms & Conditions governing website usage, disclaimer, and guidelines.'
+  home: 'Get the latest NEW GAZIABAD RESULTS, daily live market results, record charts, and draw timings in real time.',
+  about: 'Learn about NEW GAZIABAD RESULTS, our live market results platform, historical chart data, and market draw timing schedules.',
+  contact: 'Get in touch with NEW GAZIABAD RESULTS for technical support, feedback, and general inquiries.',
+  privacy: 'Read the NEW GAZIABAD RESULTS Privacy Policy regarding user privacy, cookies, data collection, and security.',
+  terms: 'Read the NEW GAZIABAD RESULTS Terms & Conditions governing website usage, disclaimer, and guidelines.'
 };
 
 // Page Navigation & Contact Form
