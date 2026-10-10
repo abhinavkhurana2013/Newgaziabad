@@ -1,4 +1,5 @@
 import './index.css';
+import { animateDrawNumber } from './app.js';
 import {
   fetchMarkets,
   fetchAllResults,
@@ -110,7 +111,7 @@ function buildNgDateMap() {
 }
 
 // 1. RENDER TODAY'S LIVE RESULT CARD
-function renderTodayLiveCard() {
+function renderTodayLiveCard(shouldAnimate = false) {
   const todayNumEl = document.getElementById('ng-live-today-num');
   const yestNumEl = document.getElementById('ng-live-yesterday-num');
   const drawTimeEl = document.getElementById('ng-live-draw-time');
@@ -140,8 +141,21 @@ function renderTodayLiveCard() {
     yestVal = formatYesterdayDisplayNumber(ngMarket.yesterday_number);
   }
 
-  if (todayNumEl) todayNumEl.textContent = todayVal;
-  if (yestNumEl) yestNumEl.textContent = yestVal;
+  if (todayNumEl) {
+    if (shouldAnimate) {
+      animateDrawNumber(todayNumEl, todayVal, { delay: 150, boxEl: todayNumEl, isToday: true });
+    } else {
+      todayNumEl.textContent = todayVal;
+    }
+  }
+
+  if (yestNumEl) {
+    if (shouldAnimate) {
+      animateDrawNumber(yestNumEl, yestVal, { delay: 80, boxEl: yestNumEl, isToday: false });
+    } else {
+      yestNumEl.textContent = yestVal;
+    }
+  }
 
   const drawTime = ngMarket?.draw_time || '09:45 PM';
   if (drawTimeEl) drawTimeEl.textContent = drawTime;
@@ -478,8 +492,8 @@ function renderRecordChartTable() {
 }
 
 // Full Render Pipeline
-function renderAllSections() {
-  renderTodayLiveCard();
+function renderAllSections(shouldAnimate = false) {
+  renderTodayLiveCard(shouldAnimate);
   renderDateChecker();
   renderRecentPreviousResults();
   renderMonthlyChartGrid();
@@ -583,7 +597,7 @@ async function loadData() {
 
     updateKnownMarkets(allMarkets);
     populateMonthDropdown();
-    renderAllSections();
+    renderAllSections(true);
     setServerStatus('online');
   } catch (err) {
     console.error('Error loading New Ghaziabad data:', err);

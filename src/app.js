@@ -118,7 +118,7 @@ function setupUserDatePicker() {
     datePicker.addEventListener('change', () => {
       if (datePicker.value) {
         selectedUserDateIso = datePicker.value;
-        applyFilterAndRender();
+        applyFilterAndRender(true, true);
       }
     });
   }
@@ -127,7 +127,7 @@ function setupUserDatePicker() {
     todayBtn.addEventListener('click', () => {
       selectedUserDateIso = getTodayIsoDateStr();
       if (datePicker) datePicker.value = selectedUserDateIso;
-      applyFilterAndRender();
+      applyFilterAndRender(true, true);
     });
   }
 }
@@ -323,8 +323,8 @@ async function loadMarketsData(showLoader = true) {
     updateKnownMarkets(allMarkets);
     updateAlertsBadge();
 
-    // Apply search filter and force re-render
-    await applyFilterAndRender(true);
+    // Apply search filter and force re-render with live drawing animation
+    await applyFilterAndRender(true, true);
     updateConnectionBanner();
     updateActiveMarketsCount();
     startFooterClock();
@@ -465,8 +465,150 @@ function sortMarketsInCanonicalOrder(markets) {
 // Cache last rendered snapshot to prevent unnecessary DOM rebuilds
 let lastRenderedSnapshot = '';
 
+/**
+ * Animate drawing a number like a live lottery/market draw:
+ * The number starts drawing fast: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11...
+ * and when the exact market number arrives, it stops with a celebratory pop!
+ */
+export function animateDrawNumber(element, finalValue, options = {}) {
+  if (!element) return;
+
+  const {
+    delay = 0,
+    boxEl = null,
+    onComplete = null
+  } = options;
+
+  const cleanFinal = String(finalValue ?? '').trim();
+
+  // Cancel any previous timer on element
+  if (element._drawAnimTimer) {
+    clearTimeout(element._drawAnimTimer);
+    element._drawAnimTimer = null;
+  }
+  if (boxEl && boxEl._boxAnimTimer) {
+    clearTimeout(boxEl._boxAnimTimer);
+    boxEl._boxAnimTimer = null;
+  }
+
+  // Check if final value is a valid integer number (e.g. "45", "07", "00", "9")
+  const isNumeric = /^\d+$/.test(cleanFinal);
+  const targetNum = isNumeric ? parseInt(cleanFinal, 10) : null;
+  const isTwoDigits = cleanFinal.length >= 2;
+
+  const formatNum = (n) => {
+    if (isTwoDigits) {
+      return String(n).padStart(2, '0');
+    }
+    return String(n);
+  };
+
+  // Immediate placeholder during initial stagger delay
+  element.textContent = cleanFinal === 'XX' || cleanFinal === '--' ? cleanFinal : (isTwoDigits ? '01' : '1');
+
+  element._drawAnimTimer = setTimeout(() => {
+    element.classList.add('number-drawing');
+    element.classList.remove('number-draw-arrived');
+
+    // Case 1: Non-numeric result, like 'XX' (pending draw) or '--'
+    if (!isNumeric || targetNum === null) {
+      let currentTick = 1;
+      const maxTicks = cleanFinal.toUpperCase() === 'XX' ? 7 : 4;
+      const tickInterval = 35;
+
+      function stepNonNumeric() {
+        if (currentTick <= maxTicks) {
+          element.textContent = formatNum(currentTick);
+          currentTick++;
+          element._drawAnimTimer = setTimeout(stepNonNumeric, tickInterval);
+        } else {
+          element.textContent = cleanFinal;
+          element.classList.remove('number-drawing');
+          element.classList.add('number-draw-arrived');
+          if (onComplete) onComplete();
+        }
+      }
+
+      stepNonNumeric();
+      return;
+    }
+
+    // Case 2: Special '00' or 0
+    if (targetNum === 0) {
+      let current = 1;
+      const max = 28; // fast cycle up to 28, then locks to 00
+      const tickInterval = 25;
+
+      function stepZero() {
+        if (current < max) {
+          element.textContent = formatNum(current);
+          current++;
+          element._drawAnimTimer = setTimeout(stepZero, tickInterval);
+        } else {
+          element.textContent = cleanFinal;
+          element.classList.remove('number-drawing');
+          element.classList.add('number-draw-arrived');
+          if (onComplete) onComplete();
+        }
+      }
+
+      stepZero();
+      return;
+    }
+
+    // Case 3: Target numeric number (e.g. 7, 11, 45, 89...)
+    // Numbers start drawing fast: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11...
+    let current = 1;
+    const finalTarget = targetNum;
+
+    // Calculate base interval so drawing looks rapid and exciting:
+    // Small numbers (<= 10) have ~75ms spacing so 1,2,3...10 is clearly perceptible
+    // Larger numbers scale dynamically to complete in ~1.0s - 1.4s
+    let baseInterval = 18;
+    if (finalTarget <= 10) {
+      baseInterval = 80;
+    } else if (finalTarget <= 25) {
+      baseInterval = 40;
+    } else if (finalTarget <= 50) {
+      baseInterval = 22;
+    } else {
+      baseInterval = Math.max(14, Math.floor(1250 / finalTarget));
+    }
+
+    function step() {
+      element.textContent = formatNum(current);
+
+      if (current >= finalTarget) {
+        // EXACT MARKET NUMBER ARRIVED -> STOP!
+        element.textContent = cleanFinal;
+        element.classList.remove('number-drawing');
+        element.classList.add('number-draw-arrived');
+        if (onComplete) onComplete();
+        return;
+      }
+
+      current++;
+
+      // Dramatic suspense slowdown for the final 2-3 numbers before stopping on exact number
+      const remaining = finalTarget - current;
+      let nextDelay = baseInterval;
+      if (remaining === 0) {
+        nextDelay = Math.round(baseInterval * 2.2);
+      } else if (remaining === 1) {
+        nextDelay = Math.round(baseInterval * 1.7);
+      } else if (remaining === 2) {
+        nextDelay = Math.round(baseInterval * 1.3);
+      }
+
+      element._drawAnimTimer = setTimeout(step, nextDelay);
+    }
+
+    step();
+  }, delay);
+}
+
 // Filter & Sort markets based on status, upcoming time & search query
-async function applyFilterAndRender(force = false) {
+async function applyFilterAndRender(force = false, shouldAnimate = false) {
   const query = currentSearchQuery.trim().toLowerCase();
 
   // Ensure date picker value matches selectedUserDateIso
@@ -513,7 +655,7 @@ async function applyFilterAndRender(force = false) {
     ])
   });
 
-  if (!force && currentSnapshot === lastRenderedSnapshot) {
+  if (!force && !shouldAnimate && currentSnapshot === lastRenderedSnapshot) {
     return;
   }
 
@@ -540,14 +682,14 @@ async function applyFilterAndRender(force = false) {
   }
 
   // Render line-wise market cards in white (includes all markets)
-  renderMarketCards(displayMarkets, dateResultsMap, prevDateResultsMap);
+  renderMarketCards(displayMarkets, dateResultsMap, prevDateResultsMap, shouldAnimate);
 
   // Update dedicated New Ghaziabad spotlight widget on homepage
-  updateNewGhaziabadHomeWidget(dateResultsMap, prevDateResultsMap);
+  updateNewGhaziabadHomeWidget(dateResultsMap, prevDateResultsMap, shouldAnimate);
 }
 
 // Render vertical stacked cards
-function renderMarketCards(markets, dateResultsMap, prevDateResultsMap) {
+function renderMarketCards(markets, dateResultsMap, prevDateResultsMap, shouldAnimate = false) {
   const container = document.getElementById('markets-container');
   const emptyBox = document.getElementById('empty-container');
   if (!container) return;
@@ -588,8 +730,8 @@ function renderMarketCards(markets, dateResultsMap, prevDateResultsMap) {
       : 'bg-white border border-slate-200/90 shadow-xs hover:shadow-md';
     const headerTextClass = 'text-lg sm:text-xl font-black text-slate-950';
 
-    card.className = `market-card ${cardBgClass} rounded-2xl p-4 sm:p-5 transition-all duration-200 relative overflow-hidden`;
-    card.style.animationDelay = `${index * 40}ms`;
+    card.className = `market-card ${cardBgClass} rounded-2xl p-4 sm:p-5 transition-all duration-200 relative overflow-hidden ${shouldAnimate ? 'market-card-enter' : ''}`;
+    card.style.animationDelay = `${index * 50}ms`;
 
     const prevUserDateIso = getPreviousIsoDateStr(selectedUserDateIso);
 
@@ -686,16 +828,16 @@ function renderMarketCards(markets, dateResultsMap, prevDateResultsMap) {
             <!-- Left Box: Yesterday's Number -->
             <div class="${yesterdayBoxClass}">
               <span class="text-[10px] font-extrabold uppercase tracking-wider ${isYellow ? 'text-slate-800' : 'text-slate-500'} mb-1">Yesterday</span>
-              <div class="${yesterdayNumBoxClass}">
-                ${yesterdayVal}
+              <div class="${yesterdayNumBoxClass}" data-yesterday-box="true">
+                <span class="market-number-span font-mono" data-market-num="yesterday">${yesterdayVal}</span>
               </div>
             </div>
 
             <!-- Right Box: Result for Selected Date -->
             <div class="${todayBoxClass}">
               <span class="${todayLabelClass}">${rightBoxLabel}</span>
-              <div class="${todayNumBoxClass}">
-                ${todayVal}
+              <div class="${todayNumBoxClass}" data-today-box="true">
+                <span class="market-number-span font-mono" data-market-num="today">${todayVal}</span>
               </div>
             </div>
           </div>
@@ -704,6 +846,29 @@ function renderMarketCards(markets, dateResultsMap, prevDateResultsMap) {
     `;
 
     container.appendChild(card);
+
+    // If drawing animation requested, start fast numbers draw!
+    if (shouldAnimate) {
+      const todaySpan = card.querySelector('[data-today-box] .market-number-span');
+      const todayBoxEl = card.querySelector('[data-today-box]');
+      const yestSpan = card.querySelector('[data-yesterday-box] .market-number-span');
+      const yestBoxEl = card.querySelector('[data-yesterday-box]');
+
+      if (todaySpan) {
+        animateDrawNumber(todaySpan, todayVal, {
+          delay: (index * 50) + 70,
+          boxEl: todayBoxEl,
+          isToday: true
+        });
+      }
+      if (yestSpan) {
+        animateDrawNumber(yestSpan, yesterdayVal, {
+          delay: (index * 50) + 30,
+          boxEl: yestBoxEl,
+          isToday: false
+        });
+      }
+    }
   });
 
   // Attach interactive alert toggle listeners to all card buttons
@@ -736,7 +901,7 @@ function setupNewGhaziabadAlertBtn() {
 }
 
 // Update the homepage dedicated New Ghaziabad result section dynamically from Supabase data
-function updateNewGhaziabadHomeWidget(dateResultsMap, prevDateResultsMap) {
+function updateNewGhaziabadHomeWidget(dateResultsMap, prevDateResultsMap, shouldAnimate = false) {
   const todayBox = document.getElementById('home-ng-today-num');
   const yestBox = document.getElementById('home-ng-yesterday-num');
   const timeBadge = document.getElementById('home-ng-draw-time');
@@ -782,8 +947,13 @@ function updateNewGhaziabadHomeWidget(dateResultsMap, prevDateResultsMap) {
       yestVal = formatYesterdayDisplayNumber(ngMarket.yesterday_number);
     }
 
-    todayBox.textContent = todayVal;
-    yestBox.textContent = yestVal;
+    if (shouldAnimate) {
+      animateDrawNumber(todayBox, todayVal, { delay: 180, boxEl: todayBox, isToday: true });
+      animateDrawNumber(yestBox, yestVal, { delay: 110, boxEl: yestBox, isToday: false });
+    } else {
+      todayBox.textContent = todayVal;
+      yestBox.textContent = yestVal;
+    }
 
     if (statusBadge) {
       if (todayVal && todayVal !== 'XX' && todayVal !== '--') {
