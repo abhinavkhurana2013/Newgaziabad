@@ -728,9 +728,9 @@ function renderMarketCards(markets, dateResultsMap, prevDateResultsMap, shouldAn
     const cardBgClass = isYellow
       ? 'bg-amber-300 border-2 border-amber-500 shadow-md ring-1 ring-amber-400/60 hover:shadow-lg'
       : 'bg-white border border-slate-200/90 shadow-xs hover:shadow-md';
-    const headerTextClass = 'text-lg sm:text-xl font-black text-slate-950';
+    const headerTextClass = 'text-base sm:text-xl font-black text-slate-950';
 
-    card.className = `market-card ${cardBgClass} rounded-2xl p-4 sm:p-5 transition-all duration-200 relative overflow-hidden ${shouldAnimate ? 'market-card-enter' : ''}`;
+    card.className = `market-card ${cardBgClass} rounded-2xl p-3.5 sm:p-5 transition-all duration-200 relative overflow-hidden max-w-full ${shouldAnimate ? 'market-card-enter' : ''}`;
     card.style.animationDelay = `${index * 50}ms`;
 
     const prevUserDateIso = getPreviousIsoDateStr(selectedUserDateIso);
@@ -769,34 +769,34 @@ function renderMarketCards(markets, dateResultsMap, prevDateResultsMap, shouldAn
       : 'record-chart-link no-pop no-popunder no-ad no-click-ad monetag-ignore inline-flex items-center gap-1 text-[10px] font-bold text-blue-600 hover:text-blue-800 bg-blue-50/80 hover:bg-blue-100 px-2 py-0.5 rounded border border-blue-200/80 transition-colors cursor-pointer';
 
     const yesterdayBoxClass = isYellow
-      ? 'flex flex-col items-center justify-center bg-amber-200/90 p-2 sm:p-2.5 rounded-xl border border-amber-400 min-w-[68px] sm:min-w-[78px]'
-      : 'flex flex-col items-center justify-center bg-slate-100/90 p-2 sm:p-2.5 rounded-xl border border-slate-200 min-w-[68px] sm:min-w-[78px]';
+      ? 'flex flex-col items-center justify-center bg-amber-200/90 p-1.5 sm:p-2.5 rounded-xl border border-amber-400 min-w-[60px] sm:min-w-[78px]'
+      : 'flex flex-col items-center justify-center bg-slate-100/90 p-1.5 sm:p-2.5 rounded-xl border border-slate-200 min-w-[60px] sm:min-w-[78px]';
     const yesterdayNumBoxClass = isYellow
-      ? 'w-13 sm:w-16 h-11 sm:h-14 bg-white border border-amber-400 text-slate-900 rounded-lg flex items-center justify-center font-mono font-black text-xl sm:text-2xl shadow-2xs'
-      : 'w-13 sm:w-16 h-11 sm:h-14 bg-white border border-slate-300 text-slate-800 rounded-lg flex items-center justify-center font-mono font-black text-xl sm:text-2xl shadow-2xs';
+      ? 'w-12 sm:w-16 h-10 sm:h-14 bg-white border border-amber-400 text-slate-900 rounded-lg flex items-center justify-center font-mono font-black text-xl sm:text-2xl shadow-2xs'
+      : 'w-12 sm:w-16 h-10 sm:h-14 bg-white border border-slate-300 text-slate-800 rounded-lg flex items-center justify-center font-mono font-black text-xl sm:text-2xl shadow-2xs';
 
     const todayBoxClass = isYellow
-      ? 'flex flex-col items-center justify-center bg-slate-950 p-2 sm:p-2.5 rounded-xl border border-amber-400 min-w-[68px] sm:min-w-[78px] shadow-xs'
-      : 'flex flex-col items-center justify-center bg-amber-100/80 p-2 sm:p-2.5 rounded-xl border border-amber-300 min-w-[68px] sm:min-w-[78px]';
+      ? 'flex flex-col items-center justify-center bg-slate-950 p-1.5 sm:p-2.5 rounded-xl border border-amber-400 min-w-[60px] sm:min-w-[78px] shadow-xs'
+      : 'flex flex-col items-center justify-center bg-amber-100/80 p-1.5 sm:p-2.5 rounded-xl border border-amber-300 min-w-[60px] sm:min-w-[78px]';
     const todayLabelClass = isYellow
-      ? 'text-[10px] font-black uppercase tracking-wider text-amber-300 mb-1'
-      : 'text-[10px] font-black uppercase tracking-wider text-amber-950 mb-1';
+      ? 'text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-amber-300 mb-0.5 sm:mb-1'
+      : 'text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-amber-950 mb-0.5 sm:mb-1';
     const todayNumBoxClass = isYellow
-      ? 'w-13 sm:w-16 h-11 sm:h-14 bg-slate-900 border border-slate-800 text-amber-300 rounded-lg flex items-center justify-center font-mono font-black text-2xl sm:text-3xl shadow-xs'
-      : 'w-13 sm:w-16 h-11 sm:h-14 bg-slate-900 border border-slate-800 text-amber-400 rounded-lg flex items-center justify-center font-mono font-black text-2xl sm:text-3xl border shadow-xs';
+      ? 'w-12 sm:w-16 h-10 sm:h-14 bg-slate-900 border border-slate-800 text-amber-300 rounded-lg flex items-center justify-center font-mono font-black text-2xl sm:text-3xl shadow-xs'
+      : 'w-12 sm:w-16 h-10 sm:h-14 bg-slate-900 border border-slate-800 text-amber-400 rounded-lg flex items-center justify-center font-mono font-black text-2xl sm:text-3xl border shadow-xs';
 
     card.innerHTML = `
       <div class="absolute top-0 left-0 w-1.5 h-full ${stripColorClass}"></div>
 
-      <div class="w-full pl-2 space-y-3">
+      <div class="w-full pl-1.5 sm:pl-2 space-y-2.5 sm:space-y-3 min-w-0">
         <!-- Title row with Market Name & Direct Alert Toggle Button -->
-        <div class="flex items-center justify-between gap-2 flex-wrap">
-          <div class="flex items-center gap-2 flex-wrap">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
             <h2 class="${headerTextClass} truncate">
               ${escapeHtml(market.market_name)}
             </h2>
-            ${isYellow ? `<span class="px-1.5 py-0.5 text-[9px] uppercase font-black bg-amber-400 text-slate-950 rounded-md border border-amber-500 shadow-xs">★ Highlighted</span>` : ''}
-            ${market.status === 'Hidden' ? `<span class="px-2 py-0.5 text-[10px] uppercase font-extrabold bg-red-100 text-red-700 rounded-md">Hidden</span>` : ''}
+            ${isYellow ? `<span class="shrink-0 px-1.5 py-0.5 text-[9px] uppercase font-black bg-amber-400 text-slate-950 rounded-md border border-amber-500 shadow-xs">★ Highlighted</span>` : ''}
+            ${market.status === 'Hidden' ? `<span class="shrink-0 px-1.5 py-0.5 text-[9px] uppercase font-extrabold bg-red-100 text-red-700 rounded-md">Hidden</span>` : ''}
           </div>
           <div class="shrink-0">
             ${getCardAlertButtonHtml(market.market_name)}
@@ -804,9 +804,9 @@ function renderMarketCards(markets, dateResultsMap, prevDateResultsMap, shouldAn
         </div>
 
         <!-- Row with Draw Time + Record Chart on Left, and Two Number Boxes on the Right -->
-        <div class="flex items-center justify-between gap-3 flex-wrap">
+        <div class="flex items-center justify-between gap-2 sm:gap-3 flex-wrap">
           <!-- Left Column: Draw time & Record chart button -->
-          <div class="flex flex-col items-start gap-1.5 text-xs font-medium text-slate-600">
+          <div class="flex flex-col items-start gap-1 text-xs font-medium text-slate-600 min-w-0">
             <span class="${drawTimeBadgeClass}">
               Draw Time: <strong class="text-slate-950 font-bold">${drawTime}</strong>
             </span>
@@ -817,17 +817,17 @@ function renderMarketCards(markets, dateResultsMap, prevDateResultsMap, shouldAn
               class="${chartBtnClass}"
             >
               <span>📊 Record Chart</span>
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </a>
           </div>
 
           <!-- Right Side: Two Result Boxes -->
-          <div class="flex items-center gap-2.5 shrink-0">
+          <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0 ml-auto">
             <!-- Left Box: Yesterday's Number -->
             <div class="${yesterdayBoxClass}">
-              <span class="text-[10px] font-extrabold uppercase tracking-wider ${isYellow ? 'text-slate-800' : 'text-slate-500'} mb-1">Yesterday</span>
+              <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider ${isYellow ? 'text-slate-800' : 'text-slate-500'} mb-0.5 sm:mb-1">Yesterday</span>
               <div class="${yesterdayNumBoxClass}" data-yesterday-box="true">
                 <span class="market-number-span font-mono" data-market-num="yesterday">${yesterdayVal}</span>
               </div>
@@ -995,7 +995,6 @@ function renderSkeletonLoaders() {
 function setupSearch() {
   const searchInput = document.getElementById('market-search-input');
   const clearBtn = document.getElementById('clear-search-btn');
-  const searchSubmitBtn = document.getElementById('search-submit-btn');
 
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
@@ -1015,14 +1014,6 @@ function setupSearch() {
         currentSearchQuery = searchInput.value;
         applyFilterAndRender(true);
       }
-    });
-  }
-
-  if (searchSubmitBtn && searchInput) {
-    searchSubmitBtn.addEventListener('click', () => {
-      currentSearchQuery = searchInput.value;
-      applyFilterAndRender(true);
-      searchInput.focus();
     });
   }
 

@@ -4,6 +4,7 @@ import {
   fetchAllResults,
   fetchMarketHistory,
   getTodayIsoDateStr,
+  getYesterdayIsoDateStr,
   getPreviousIsoDateStr,
   extractIsoDate,
   extractResultString,
@@ -133,20 +134,78 @@ function populateMonthDropdown() {
   monthSelect.value = selectedYearMonth;
 }
 
-// Build consolidated Result Lookup Map exclusively from all_results table
-// key: `${market_name.toLowerCase()}|${dateIso}` -> string result
+// Build consolidated Result Lookup Map from all_results table records AND allMarkets live values
 function buildConsolidatedResultMap() {
   const map = new Map();
+  const todayIso = getTodayIsoDateStr();
+  const yesterdayIso = getYesterdayIsoDateStr();
 
-  // Read exclusively from all_results table records
+  // Helper to index multiple keys for robust matching
+  const setIndex = (name, marketId, dateStr, val) => {
+    if (!val || val === 'XX' || val === '--') return;
+    const cleanVal = extractResultString(val);
+    if (!cleanVal || cleanVal === 'XX' || cleanVal === '--') return;
+
+    if (name) {
+      const cleanName = String(name).trim().toLowerCase();
+      map.set(`${cleanName}|${dateStr}`, cleanVal);
+      // Slug version: "new gaziabad" -> "new-gaziabad"
+      const slug = cleanName.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      if (slug) map.set(`${slug}|${dateStr}`, cleanVal);
+      // Stripped alphanumeric: "newgaziabad"
+      const stripped = cleanName.replace(/[^a-z0-9]/g, '');
+      if (stripped) map.set(`${stripped}|${dateStr}`, cleanVal);
+
+      // Special alias mappings (e.g. gali, disawer <-> disawar, ghaziabad <-> gaziabad)
+      if (cleanName.includes('gali')) {
+        map.set(`gali|${dateStr}`, cleanVal);
+      }
+      if (cleanName.includes('disaw') || cleanName.includes('desaw')) {
+        map.set(`disawer|${dateStr}`, cleanVal);
+        map.set(`disawar|${dateStr}`, cleanVal);
+      }
+      if (cleanName.includes('gaziabad') || cleanName.includes('ghaziabad')) {
+        if (cleanName.includes('new')) {
+          map.set(`new-gaziabad|${dateStr}`, cleanVal);
+          map.set(`new-ghaziabad|${dateStr}`, cleanVal);
+        } else {
+          map.set(`gaziabad|${dateStr}`, cleanVal);
+          map.set(`ghaziabad|${dateStr}`, cleanVal);
+        }
+      }
+    }
+    if (marketId) {
+      map.set(`id:${String(marketId).trim()}|${dateStr}`, cleanVal);
+    }
+  };
+
+  // 1. Read from allResults table records
   if (Array.isArray(allResults)) {
     allResults.forEach(item => {
       const normDate = extractIsoDate(item.result_date);
       const rawRes = (item.result !== undefined && item.result !== null) ? item.result : item.result_number;
       const resStr = extractResultString(rawRes);
-      if (item.market_name && normDate && resStr) {
-        const key = `${item.market_name.trim().toLowerCase()}|${normDate}`;
-        map.set(key, resStr);
+      if (normDate && resStr && resStr !== 'XX' && resStr !== '--') {
+        setIndex(item.market_name, item.market_id, normDate, resStr);
+      }
+    });
+  }
+
+  // 2. ALSO merge live values from allMarkets (which are shown on the Home Page!)
+  // This guarantees that any number declared for Gali, New Ghaziabad, etc.
+  // that appears on the Home Page is ALWAYS present in the Record Chart and Matrix Grid!
+  if (Array.isArray(allMarkets)) {
+    allMarkets.forEach(m => {
+      // Today's number
+      const todayNum = extractResultString(m.today_number !== undefined ? m.today_number : m.first_number);
+      if (todayNum && todayNum !== 'XX' && todayNum !== '--') {
+        setIndex(m.market_name, m.id, todayIso, todayNum);
+      }
+
+      // Yesterday's number
+      const yestNum = extractResultString(m.yesterday_number !== undefined ? m.yesterday_number : m.second_number);
+      if (yestNum && yestNum !== 'XX' && yestNum !== '--') {
+        setIndex(m.market_name, m.id, yesterdayIso, yestNum);
       }
     });
   }
@@ -154,9 +213,75 @@ function buildConsolidatedResultMap() {
   return map;
 }
 
+// Universal lookup for a market result on a given date (guaranteeing Gali and all markets match)
+function lookupMarketResult(resultMap, market, dateIso) {
+  if (!market || !dateIso) return null;
+  const todayIso = getTodayIsoDateStr();
+  const yesterdayIso = getYesterdayIsoDateStr();
+  const name = (market.market_name || '').trim().toLowerCase();
+  const id = market.id ? `id:${String(market.id).trim()}` : '';
+  const slug = name.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const stripped = name.replace(/[^a-z0-9]/g, '');
+
+  // 1. Check direct name match
+  let val = resultMap.get(`${name}|${dateIso}`);
+  if (val && val !== 'XX' && val !== '--') return val;
+
+  // 2. Check slug / stripped match
+  if (slug) {
+    val = resultMap.get(`${slug}|${dateIso}`);
+    if (val && val !== 'XX' && val !== '--') return val;
+  }
+  if (stripped) {
+    val = resultMap.get(`${stripped}|${dateIso}`);
+    if (val && val !== 'XX' && val !== '--') return val;
+  }
+
+  // 3. Check ID match
+  if (id) {
+    val = resultMap.get(`${id}|${dateIso}`);
+    if (val && val !== 'XX' && val !== '--') return val;
+  }
+
+  // 4. Special market name aliases (e.g. Gali, Disawer, etc.)
+  if (name.includes('gali')) {
+    val = resultMap.get(`gali|${dateIso}`);
+    if (val && val !== 'XX' && val !== '--') return val;
+  }
+  if (name.includes('disaw') || name.includes('desaw')) {
+    val = resultMap.get(`disawer|${dateIso}`) || resultMap.get(`disawar|${dateIso}`);
+    if (val && val !== 'XX' && val !== '--') return val;
+  }
+  if (name.includes('gaziabad') || name.includes('ghaziabad')) {
+    if (name.includes('new')) {
+      val = resultMap.get(`new-gaziabad|${dateIso}`) || resultMap.get(`new-ghaziabad|${dateIso}`);
+    } else {
+      val = resultMap.get(`gaziabad|${dateIso}`) || resultMap.get(`ghaziabad|${dateIso}`);
+    }
+    if (val && val !== 'XX' && val !== '--') return val;
+  }
+
+  // 5. Fallback directly to market object's live numbers (same as home page!)
+  if (dateIso === todayIso) {
+    const rawToday = market.today_number !== undefined ? market.today_number : market.first_number;
+    const tNum = extractResultString(rawToday);
+    if (tNum && tNum !== 'XX' && tNum !== '--') return tNum;
+  }
+
+  if (dateIso === yesterdayIso) {
+    const rawYest = market.yesterday_number !== undefined ? market.yesterday_number : market.second_number;
+    const yNum = extractResultString(rawYest);
+    if (yNum && yNum !== 'XX' && yNum !== '--') return yNum;
+  }
+
+  return null;
+}
+
 // Get all unique sorted dates to render based on filters (all dates 1 to 30/31)
 function getDatesToRender(resultMap) {
   const dateSet = new Set();
+  const todayIso = getTodayIsoDateStr();
+  const yesterdayIso = getYesterdayIsoDateStr();
 
   if (selectedSpecificDate) {
     return [selectedSpecificDate];
@@ -175,6 +300,7 @@ function getDatesToRender(resultMap) {
     const now = new Date();
     const curYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
     uniqueMonths.add(curYM);
+    if (todayIso) uniqueMonths.add(todayIso.substring(0, 7));
 
     if (Array.isArray(allResults)) {
       allResults.forEach(item => {
@@ -193,6 +319,14 @@ function getDatesToRender(resultMap) {
         dateSet.add(`${ym}-${dStr}`);
       }
     });
+  }
+
+  // Always ensure today's date and yesterday's date exist in the set
+  if (selectedYearMonth === 'ALL' || (selectedYearMonth && todayIso.startsWith(selectedYearMonth))) {
+    dateSet.add(todayIso);
+  }
+  if (selectedYearMonth === 'ALL' || (selectedYearMonth && yesterdayIso.startsWith(selectedYearMonth))) {
+    dateSet.add(yesterdayIso);
   }
 
   // Sort dates ascending (01 to 30/31)
@@ -339,8 +473,7 @@ function renderMatrixView() {
 
     // Columns for each market
     marketsToDisplay.forEach(m => {
-      const key = `${m.market_name.trim().toLowerCase()}|${dateIso}`;
-      let resVal = resultMap.get(key);
+      let resVal = lookupMarketResult(resultMap, m, dateIso);
 
       // If no recorded value in map for today, show XX
       if (!resVal && isToday) {
@@ -441,8 +574,7 @@ function renderSingleMarketView() {
     const displayDate = formatDbDateToDisplay(dateIso);
     const dayName = getDayNameForDate(dateIso);
 
-    const key = `${mName}|${dateIso}`;
-    let resultVal = resultMap.get(key);
+    let resultVal = lookupMarketResult(resultMap, currentMarket, dateIso);
     if (!resultVal && isToday) {
       resultVal = 'XX';
     }
@@ -904,6 +1036,135 @@ function setupEventListeners() {
       renderCurrentView();
     }
   });
+
+  // Setup Fullscreen Mode for All Markets Matrix Chart
+  setupMatrixFullscreen();
+}
+
+// ----------------------------------------------------
+// FULLSCREEN MODE HANDLER FOR ALL MATRIX RECORD CHARTS
+// ----------------------------------------------------
+function setupMatrixFullscreen() {
+  const matrixFullscreenBtn = document.getElementById('matrix-fullscreen-btn');
+  const matrixContainer = document.getElementById('matrix-view-container');
+  const matrixExpandIcon = document.getElementById('fullscreen-icon-expand');
+  const matrixCollapseIcon = document.getElementById('fullscreen-icon-collapse');
+  const matrixBtnText = document.getElementById('matrix-fullscreen-btn-text');
+
+  const singleFullscreenBtn = document.getElementById('single-fullscreen-btn');
+  const singleContainer = document.getElementById('single-view-container');
+  const singleExpandIcon = document.getElementById('single-fullscreen-icon-expand');
+  const singleCollapseIcon = document.getElementById('single-fullscreen-icon-collapse');
+  const singleBtnText = document.getElementById('single-fullscreen-btn-text');
+
+  let isFullscreen = false;
+  let activeTargetContainer = null;
+
+  const updateFullscreenUI = (active, targetContainer) => {
+    isFullscreen = active;
+    activeTargetContainer = active ? targetContainer : null;
+
+    if (active && targetContainer) {
+      targetContainer.classList.add('matrix-fullscreen-active');
+      document.body.style.overflow = 'hidden';
+
+      if (targetContainer === matrixContainer && matrixFullscreenBtn) {
+        if (matrixExpandIcon) matrixExpandIcon.classList.add('hidden');
+        if (matrixCollapseIcon) matrixCollapseIcon.classList.remove('hidden');
+        if (matrixBtnText) matrixBtnText.textContent = 'Exit Fullscreen';
+        matrixFullscreenBtn.classList.remove('bg-amber-400', 'text-slate-950', 'hover:bg-amber-300', 'border-amber-500');
+        matrixFullscreenBtn.classList.add('bg-rose-600', 'text-white', 'hover:bg-rose-500', 'border-rose-500');
+      } else if (targetContainer === singleContainer && singleFullscreenBtn) {
+        if (singleExpandIcon) singleExpandIcon.classList.add('hidden');
+        if (singleCollapseIcon) singleCollapseIcon.classList.remove('hidden');
+        if (singleBtnText) singleBtnText.textContent = 'Exit Fullscreen';
+        singleFullscreenBtn.classList.remove('bg-amber-400', 'text-slate-950', 'hover:bg-amber-300', 'border-amber-500');
+        singleFullscreenBtn.classList.add('bg-rose-600', 'text-white', 'hover:bg-rose-500', 'border-rose-500');
+      }
+    } else {
+      if (matrixContainer) matrixContainer.classList.remove('matrix-fullscreen-active');
+      if (singleContainer) singleContainer.classList.remove('matrix-fullscreen-active');
+      document.body.style.overflow = '';
+
+      if (matrixFullscreenBtn) {
+        if (matrixExpandIcon) matrixExpandIcon.classList.remove('hidden');
+        if (matrixCollapseIcon) matrixCollapseIcon.classList.add('hidden');
+        if (matrixBtnText) matrixBtnText.textContent = 'Fullscreen Matrix';
+        matrixFullscreenBtn.classList.add('bg-amber-400', 'text-slate-950', 'hover:bg-amber-300', 'border-amber-500');
+        matrixFullscreenBtn.classList.remove('bg-rose-600', 'text-white', 'hover:bg-rose-500', 'border-rose-500');
+      }
+
+      if (singleFullscreenBtn) {
+        if (singleExpandIcon) singleExpandIcon.classList.remove('hidden');
+        if (singleCollapseIcon) singleCollapseIcon.classList.add('hidden');
+        if (singleBtnText) singleBtnText.textContent = 'Fullscreen Chart';
+        singleFullscreenBtn.classList.add('bg-amber-400', 'text-slate-950', 'hover:bg-amber-300', 'border-amber-500');
+        singleFullscreenBtn.classList.remove('bg-rose-600', 'text-white', 'hover:bg-rose-500', 'border-rose-500');
+      }
+    }
+  };
+
+  const toggleFullscreen = async (target) => {
+    const container = target || (currentViewMode === 'single' ? singleContainer : matrixContainer);
+    if (!container) return;
+
+    if (!isFullscreen) {
+      updateFullscreenUI(true, container);
+      // Attempt native requestFullscreen if permitted
+      if (container.requestFullscreen && !document.fullscreenElement) {
+        try {
+          await container.requestFullscreen();
+        } catch (e) {
+          // Native fullscreen may fail in iframe sandbox; CSS fullscreen handles it smoothly
+        }
+      }
+    } else {
+      updateFullscreenUI(false);
+      if (document.fullscreenElement && document.exitFullscreen) {
+        try {
+          await document.exitFullscreen();
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+  };
+
+  if (matrixFullscreenBtn && matrixContainer) {
+    matrixFullscreenBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleFullscreen(matrixContainer);
+    });
+  }
+
+  if (singleFullscreenBtn && singleContainer) {
+    singleFullscreenBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleFullscreen(singleContainer);
+    });
+  }
+
+  // Listen to native fullscreen changes (e.g. user presses ESC in browser)
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && isFullscreen) {
+      updateFullscreenUI(false);
+    }
+  });
+
+  // Listen to ESC key for CSS fullscreen mode
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isFullscreen) {
+      toggleFullscreen();
+    }
+  });
+
+  // Check URL param ?fullscreen=true or #fullscreen
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('fullscreen') === 'true' || window.location.hash === '#fullscreen') {
+    setTimeout(() => {
+      toggleFullscreen(currentViewMode === 'single' ? singleContainer : matrixContainer);
+    }, 200);
+  }
 }
 
 // Initialize Record Chart Page

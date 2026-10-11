@@ -92,7 +92,7 @@ function generateMarketPage(market, filename) {
   // Replace Canonical & OG
   content = content.replace(
     /<link rel="canonical" href=".*?" \/>/s,
-    `<link rel="canonical" href="https://newgaziabadresults.com/${market.slug}" />`
+    `<link rel="canonical" href="https://newgaziabadresult.vercel.app/${market.slug}" />`
   );
   content = content.replace(
     /<meta property="og:title" content=".*?" \/>/s,
@@ -104,7 +104,7 @@ function generateMarketPage(market, filename) {
   );
   content = content.replace(
     /<meta property="og:url" content=".*?" \/>/s,
-    `<meta property="og:url" content="https://newgaziabadresults.com/${market.slug}" />`
+    `<meta property="og:url" content="https://newgaziabadresult.vercel.app/${market.slug}" />`
   );
 
   // Replace headings

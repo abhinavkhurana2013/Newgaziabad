@@ -1009,11 +1009,18 @@ export function getISTDateTime() {
   const dd = String(istDateObj.getUTCDate()).padStart(2, '0');
   const istDateStr = `${yyyy}-${mm}-${dd}`;
 
+  // Previous date in IST
+  const prevDateObj = new Date(istDateObj.getTime() - 24 * 60 * 60 * 1000);
+  const pYyyy = prevDateObj.getUTCFullYear();
+  const pMm = String(prevDateObj.getUTCMonth() + 1).padStart(2, '0');
+  const pDd = String(prevDateObj.getUTCDate()).padStart(2, '0');
+  const prevIstDateStr = `${pYyyy}-${pMm}-${pDd}`;
+
   const hour = istDateObj.getUTCHours();
   const minute = istDateObj.getUTCMinutes();
   const istMinutes = hour * 60 + minute;
 
-  return { istDateStr, hour, minute, istMinutes };
+  return { istDateStr, prevIstDateStr, hour, minute, istMinutes };
 }
 
 /**
@@ -1083,17 +1090,6 @@ export async function forceShiftGaliTodayToYesterday() {
                 .eq('id', gm.id);
 
               await saveDailyResultRecord(gm.market_name, prevIstDateStr, numToday, gm.id);
-
-              // Remove today's entry from all_results for Gali so today's box renders XX
-              try {
-                await supabaseClient
-                  .from('all_results')
-                  .delete()
-                  .ilike('market_name', '%gali%')
-                  .eq('result_date', istDateStr);
-              } catch (delErr) {
-                // ignore
-              }
 
               shifted = true;
             }
@@ -1230,8 +1226,9 @@ export async function executeAutoShiftIST(allMarkets) {
  */
 export async function fetchAllResults() {
   const mergedMap = new Map(); // key: "market_name|result_date"
+  const { istDateStr, prevIstDateStr } = getISTDateTime();
 
-  // 1. Fetch exclusively from all_results table
+  // 1. Fetch from all_results table
   if (isSupabaseConfigured()) {
     if (!supabaseClient) initSupabaseClient();
     if (supabaseClient) {
@@ -1266,6 +1263,89 @@ export async function fetchAllResults() {
       } catch (err) {
         console.warn('all_results fetch notice:', err);
       }
+
+      // Also merge from daily_results table (for any legacy or alternative records)
+      try {
+        const { data: dailyData } = await supabaseClient
+          .from('daily_results')
+          .select('*')
+          .gte('result_date', DB_START_DATE)
+          .order('result_date', { ascending: false });
+
+        if (Array.isArray(dailyData)) {
+          dailyData.forEach(item => {
+            const normDate = extractIsoDate(item.result_date);
+            const rawRes = (item.result !== undefined && item.result !== null) ? item.result : item.result_number;
+            const resStr = extractResultString(rawRes);
+            if (item.market_name && normDate && resStr && normDate >= DB_START_DATE) {
+              const key = `${item.market_name.trim().toLowerCase()}|${normDate}`;
+              if (!mergedMap.has(key)) {
+                mergedMap.set(key, {
+                  id: item.id,
+                  market_id: item.market_id,
+                  market_name: item.market_name.trim(),
+                  result_date: normDate,
+                  result: resStr,
+                  result_number: resStr,
+                  draw_time: item.draw_time,
+                  created_at: item.created_at,
+                  updated_at: item.updated_at
+                });
+              }
+            }
+          });
+        }
+      } catch (dailyErr) {
+        // ignore
+      }
+
+      // Also incorporate live market numbers from results table (especially Gali, Disawer, etc.)
+      try {
+        const { data: marketsData } = await supabaseClient
+          .from('results')
+          .select('*');
+
+        if (Array.isArray(marketsData)) {
+          marketsData.forEach(m => {
+            const todayRes = extractResultString(m.today_number !== undefined ? m.today_number : m.first_number);
+            const yestRes = extractResultString(m.yesterday_number !== undefined ? m.yesterday_number : m.second_number);
+
+            if (m.market_name && todayRes && todayRes !== 'XX' && todayRes !== '--') {
+              const keyToday = `${m.market_name.trim().toLowerCase()}|${istDateStr}`;
+              const existing = mergedMap.get(keyToday);
+              if (!existing || !existing.result || existing.result === 'XX' || existing.result === '--') {
+                mergedMap.set(keyToday, {
+                  id: `live-today-${m.id}`,
+                  market_id: m.id,
+                  market_name: m.market_name.trim(),
+                  result_date: istDateStr,
+                  result: todayRes,
+                  result_number: todayRes,
+                  draw_time: m.draw_time
+                });
+              }
+            }
+
+            if (m.market_name && yestRes && yestRes !== 'XX' && yestRes !== '--') {
+              const keyYest = `${m.market_name.trim().toLowerCase()}|${prevIstDateStr}`;
+              const existing = mergedMap.get(keyYest);
+              if (!existing || !existing.result || existing.result === 'XX' || existing.result === '--') {
+                mergedMap.set(keyYest, {
+                  id: `live-yest-${m.id}`,
+                  market_id: m.id,
+                  market_name: m.market_name.trim(),
+                  result_date: prevIstDateStr,
+                  result: yestRes,
+                  result_number: yestRes,
+                  draw_time: m.draw_time
+                });
+              }
+            }
+          });
+        }
+      } catch (marketsErr) {
+        // ignore
+      }
     }
   } else {
     // Fallback to local storage history only if unconfigured
@@ -1295,12 +1375,56 @@ export async function fetchAllResults() {
           });
         }
       }
+
+      // Also merge local storage or seed markets live numbers
+      const rawMarkets = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const localMarkets = rawMarkets ? JSON.parse(rawMarkets) : SEED_MARKETS;
+      if (Array.isArray(localMarkets)) {
+        localMarkets.forEach(m => {
+          const todayRes = extractResultString(m.today_number !== undefined ? m.today_number : m.first_number);
+          const yestRes = extractResultString(m.yesterday_number !== undefined ? m.yesterday_number : m.second_number);
+
+          if (m.market_name && todayRes && todayRes !== 'XX' && todayRes !== '--') {
+            const keyToday = `${m.market_name.trim().toLowerCase()}|${istDateStr}`;
+            const existing = mergedMap.get(keyToday);
+            if (!existing || !existing.result || existing.result === 'XX' || existing.result === '--') {
+              mergedMap.set(keyToday, {
+                id: `local-today-${m.id}`,
+                market_id: m.id,
+                market_name: m.market_name.trim(),
+                result_date: istDateStr,
+                result: todayRes,
+                result_number: todayRes,
+                draw_time: m.draw_time
+              });
+            }
+          }
+
+          if (m.market_name && yestRes && yestRes !== 'XX' && yestRes !== '--') {
+            const keyYest = `${m.market_name.trim().toLowerCase()}|${prevIstDateStr}`;
+            const existing = mergedMap.get(keyYest);
+            if (!existing || !existing.result || existing.result === 'XX' || existing.result === '--') {
+              mergedMap.set(keyYest, {
+                id: `local-yest-${m.id}`,
+                market_id: m.id,
+                market_name: m.market_name.trim(),
+                result_date: prevIstDateStr,
+                result: yestRes,
+                result_number: yestRes,
+                draw_time: m.draw_time
+              });
+            }
+          }
+        });
+      }
     } catch (e) {
       console.warn('Failed to parse local history:', e);
     }
   }
 
-  return Array.from(mergedMap.values()).sort((a, b) => b.result_date.localeCompare(a.result_date));
+  return Array.from(mergedMap.values())
+    .filter(x => x && x.result_date)
+    .sort((a, b) => String(b.result_date || '').localeCompare(String(a.result_date || '')));
 }
 
 /**
@@ -1412,7 +1536,9 @@ export async function fetchMarketHistory(marketName, yearMonth = 'ALL', marketId
   }
 
   // Chronological order (newest date first)
-  return Array.from(historyMap.values()).sort((a, b) => b.result_date.localeCompare(a.result_date));
+  return Array.from(historyMap.values())
+    .filter(x => x && x.result_date)
+    .sort((a, b) => String(b.result_date || '').localeCompare(String(a.result_date || '')));
 }
 
 /**

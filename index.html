@@ -6,8 +6,8 @@
     <title>NEW GAZIABAD RESULTS – Latest Results &amp; Updates</title>
 
     <!-- Meta Tags for Search Engines -->
-    <meta name="description" content="Get the latest NEW GAZIABAD RESULTS, daily live market results, record charts, and draw timings in real time.">
-    <link rel="canonical" href="https://newgaziabadresults.com/">
+    <meta name="description" content="Get the latest NEW GAZIABAD RESULTS, daily live market results, record charts, and draw timings in real time on Newgaziabadresult.vercel.app.">
+    <link rel="canonical" href="https://newgaziabadresult.vercel.app/">
 
     <!-- Favicon & Touch Icons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -22,14 +22,14 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="NEW GAZIABAD RESULTS">
     <meta property="og:title" content="NEW GAZIABAD RESULTS – Latest Results &amp; Updates">
-    <meta property="og:description" content="Get the latest NEW GAZIABAD RESULTS, daily live market results, record charts, and draw timings in real time.">
-    <meta property="og:url" content="https://newgaziabadresults.com/">
+    <meta property="og:description" content="Get the latest NEW GAZIABAD RESULTS, daily live market results, record charts, and draw timings in real time on Newgaziabadresult.vercel.app.">
+    <meta property="og:url" content="https://newgaziabadresult.vercel.app/">
     <meta property="og:image" content="/logo.png">
 
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="NEW GAZIABAD RESULTS – Latest Results &amp; Updates">
-    <meta name="twitter:description" content="Get the latest NEW GAZIABAD RESULTS, daily live market results, record charts, and draw timings in real time.">
+    <meta name="twitter:description" content="Get the latest NEW GAZIABAD RESULTS, daily live market results, record charts, and draw timings in real time on Newgaziabadresult.vercel.app.">
     <meta name="twitter:image" content="/logo.png">
 
     <!-- Schema.org JSON-LD Structured Data for Google Site Name & Organization -->
@@ -39,20 +39,20 @@
       "@graph": [
         {
           "@type": "WebSite",
-          "@id": "https://newgaziabadresults.com/#website",
-          "url": "https://newgaziabadresults.com/",
+          "@id": "https://newgaziabadresult.vercel.app/#website",
+          "url": "https://newgaziabadresult.vercel.app/",
           "name": "NEW GAZIABAD RESULTS",
           "description": "Latest Results & Updates for New Gaziabad and live markets.",
           "inLanguage": "en"
         },
         {
           "@type": "Organization",
-          "@id": "https://newgaziabadresults.com/#organization",
+          "@id": "https://newgaziabadresult.vercel.app/#organization",
           "name": "NEW GAZIABAD RESULTS",
-          "url": "https://newgaziabadresults.com/",
+          "url": "https://newgaziabadresult.vercel.app/",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://newgaziabadresults.com/logo.png"
+            "url": "https://newgaziabadresult.vercel.app/logo.png"
           }
         }
       ]
@@ -73,39 +73,39 @@
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="/src/index.css" />
   </head>
-  <body class="min-h-full flex flex-col bg-gray-100 font-sans pb-12">
+  <body class="min-h-full flex flex-col bg-gray-100 font-sans pb-12 overflow-x-hidden w-full max-w-full">
 
     <!-- HEADER -->
-    <header class="bg-amber-400 h-14 flex items-center px-4 shadow-md z-20 shrink-0 sticky top-0">
-      <div class="w-full max-w-3xl mx-auto flex items-center justify-between gap-2">
+    <header class="bg-amber-400 h-14 flex items-center px-3 sm:px-4 shadow-md z-20 shrink-0 sticky top-0 w-full">
+      <div class="w-full max-w-3xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
         
         <!-- Left: Brand Title -->
-        <a href="#home" data-target="home" class="nav-btn flex items-center gap-2 hover:opacity-90 transition-opacity cursor-pointer">
-          <img src="/favicon-32x32.png" alt="NEW GAZIABAD RESULTS" class="w-8 h-8 rounded-lg shadow-2xs shrink-0 object-contain" />
-          <h1 class="text-base sm:text-lg md:text-xl font-black uppercase tracking-wider text-black flex items-center m-0 p-0 whitespace-nowrap">
+        <a href="#home" data-target="home" class="nav-btn flex items-center gap-1.5 sm:gap-2 hover:opacity-90 transition-opacity cursor-pointer min-w-0 flex-1">
+          <img src="/favicon-32x32.png" alt="NEW GAZIABAD RESULTS" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg shadow-2xs shrink-0 object-contain" />
+          <h1 class="text-sm xs:text-base sm:text-lg md:text-xl font-black uppercase tracking-wider text-black flex items-center m-0 p-0 truncate">
             NEW GAZIABAD RESULTS
           </h1>
         </a>
 
         <!-- Right: Quick Navigation -->
-        <div class="flex items-center gap-1.5 sm:gap-2">
+        <div class="flex items-center gap-1 sm:gap-2 shrink-0">
           <!-- Notification Alerts Opt-in Bell -->
           <button 
             id="open-alerts-btn" 
             title="Real-Time Result Alerts" 
             aria-label="Real-Time Result Alerts"
-            class="relative inline-flex items-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider bg-amber-500 hover:bg-amber-600 text-slate-950 px-2.5 py-1.5 rounded-xl border border-amber-600 shadow-xs transition-colors cursor-pointer"
+            class="relative inline-flex items-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider bg-amber-500 hover:bg-amber-600 text-slate-950 px-2 sm:px-2.5 py-1.5 rounded-xl border border-amber-600 shadow-xs transition-colors cursor-pointer"
           >
-            <span>🔔</span> <span class="hidden xs:inline">Alerts</span>
+            <span>🔔</span> <span class="hidden sm:inline">Alerts</span>
             <span id="alerts-badge" class="hidden absolute -top-1.5 -right-1.5 bg-rose-600 text-white text-[10px] font-black rounded-full h-4 min-w-[16px] px-1 flex items-center justify-center border-2 border-white shadow-xs">0</span>
           </button>
-          <a href="/new-ghaziabad.html" class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider bg-slate-950 text-amber-300 hover:bg-slate-900 px-2.5 py-1.5 rounded-xl border border-slate-800 shadow-xs transition-colors">
-            <span>🎯</span> <span class="hidden xs:inline">New Ghaziabad</span>
+          <a href="/new-ghaziabad.html" class="hidden md:inline-flex items-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider bg-slate-950 text-amber-300 hover:bg-slate-900 px-2 sm:px-2.5 py-1.5 rounded-xl border border-slate-800 shadow-xs transition-colors">
+            <span>🎯</span> <span>New Ghaziabad</span>
           </a>
-          <a href="/chart" data-record-chart="true" class="no-pop no-popunder no-ad no-click-ad monetag-ignore inline-flex items-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider bg-amber-500 hover:bg-amber-600 text-slate-950 px-2.5 py-1.5 rounded-xl border border-amber-600 shadow-xs transition-colors">
-            <span>📊</span> <span class="hidden xs:inline">Charts</span>
+          <a href="/chart" data-record-chart="true" class="hidden sm:inline-flex no-pop no-popunder no-ad no-click-ad monetag-ignore items-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider bg-amber-500 hover:bg-amber-600 text-slate-950 px-2 sm:px-2.5 py-1.5 rounded-xl border border-amber-600 shadow-xs transition-colors">
+            <span>📊</span> <span>Charts</span>
           </a>
-          <button id="hamburger-btn" class="p-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 cursor-pointer sm:hidden" aria-label="Open Menu">
+          <button id="hamburger-btn" class="p-1.5 sm:p-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 cursor-pointer sm:hidden" aria-label="Open Menu">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
@@ -116,7 +116,7 @@
     </header>
 
     <!-- OFFLINE BANNER -->
-    <div id="offline-banner" class="hidden bg-rose-600 text-white px-4 py-2 text-center text-sm font-bold shadow-md flex items-center justify-center gap-2">
+    <div id="offline-banner" class="hidden bg-rose-600 text-white px-4 py-2 text-center text-sm font-bold shadow-md flex items-center justify-center gap-2 w-full">
       <span>⚠️ No Internet Connection</span>
       <button id="retry-connection-btn" class="underline hover:text-amber-200 cursor-pointer ml-2 text-xs uppercase tracking-wider bg-rose-800 px-2.5 py-1 rounded">
         Retry
@@ -124,58 +124,51 @@
     </div>
 
     <!-- MAIN CONTAINER -->
-    <main class="flex-1 max-w-3xl w-full mx-auto px-3 sm:px-4 pt-4 pb-8 space-y-3">
+    <main class="flex-1 max-w-3xl w-full mx-auto px-3 sm:px-4 pt-4 pb-8 space-y-3 overflow-x-hidden">
 
       <!-- VIEW: HOME (Market Cards Display Only) -->
-      <div id="view-home" class="page-view space-y-4">
+      <div id="view-home" class="page-view space-y-4 w-full">
 
         <!-- LIVE RESULTS SECTION -->
-        <section class="space-y-3">
-          <div class="flex flex-wrap items-center justify-between gap-2 px-1">
-            <h2 class="text-sm sm:text-base font-black text-gray-900 uppercase tracking-wide flex items-center gap-1.5">
+        <section class="space-y-3 w-full">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-0.5">
+            <h2 class="text-xs sm:text-base font-black text-gray-900 uppercase tracking-wide flex items-center gap-1.5">
               <span>⚡</span> Live Market Results &amp; Draw Timings
             </h2>
 
-            <div class="flex flex-wrap items-center gap-2">
-              <!-- SEARCH INPUT & BUTTON (In front of Date Selection) -->
-              <div class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl border border-gray-300 shadow-2xs">
-                <span class="text-xs text-slate-500">🔍</span>
+            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <!-- SEARCH INPUT (In front of Date Selection) -->
+              <div class="flex items-center gap-1 bg-white px-2 sm:px-2.5 py-1.5 rounded-xl border border-gray-300 shadow-2xs flex-1 sm:flex-initial min-w-0">
+                <span class="text-xs text-slate-500 shrink-0">🔍</span>
                 <input 
                   type="text" 
                   id="market-search-input" 
                   placeholder="Search market..." 
-                  class="text-xs font-bold text-slate-900 bg-transparent placeholder-slate-400 focus:outline-none w-24 sm:w-32"
+                  class="text-xs font-bold text-slate-900 bg-transparent placeholder-slate-400 focus:outline-none w-full sm:w-28 md:w-36 min-w-0"
                 />
                 <button 
                   id="clear-search-btn" 
-                  class="hidden text-slate-400 hover:text-slate-700 text-xs px-1 cursor-pointer font-bold"
+                  class="hidden text-slate-400 hover:text-slate-700 text-xs px-1 cursor-pointer font-bold shrink-0"
                   title="Clear search"
                 >
                   ✕
                 </button>
-                <button 
-                  id="search-submit-btn" 
-                  title="Search Market" 
-                  class="text-[10px] font-black uppercase tracking-wider bg-amber-400 hover:bg-amber-500 text-slate-950 px-2 py-1 rounded-md border border-amber-500 cursor-pointer transition-colors"
-                >
-                  Search
-                </button>
               </div>
 
               <!-- DATE SELECTOR FOR USER WEBSITE -->
-              <div class="flex items-center gap-2 bg-white px-2.5 py-1.5 rounded-xl border border-gray-300 shadow-2xs">
-                <label for="home-date-picker" class="text-xs font-extrabold text-slate-800 flex items-center gap-1 cursor-pointer">
+              <div class="flex items-center gap-1.5 bg-white px-2 sm:px-2.5 py-1.5 rounded-xl border border-gray-300 shadow-2xs shrink-0 max-w-full">
+                <label for="home-date-picker" class="text-xs font-extrabold text-slate-800 flex items-center gap-1 cursor-pointer shrink-0">
                   <span>📅 Date:</span>
                 </label>
                 <input 
                   type="date" 
                   id="home-date-picker" 
-                  class="text-xs font-black text-slate-900 bg-amber-50 border border-amber-300 rounded-lg px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
+                  class="text-xs font-black text-slate-900 bg-amber-50 border border-amber-300 rounded-lg px-1.5 sm:px-2 py-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer max-w-[125px] sm:max-w-none"
                 />
                 <button 
                   id="home-today-date-btn" 
                   title="Reset to Today" 
-                  class="text-[10px] font-black uppercase tracking-wider bg-amber-400 hover:bg-amber-500 text-slate-950 px-2 py-1 rounded-md border border-amber-500 cursor-pointer transition-colors"
+                  class="text-[10px] font-black uppercase tracking-wider bg-amber-400 hover:bg-amber-500 text-slate-950 px-2 py-1 rounded-md border border-amber-500 cursor-pointer transition-colors shrink-0"
                 >
                   Today
                 </button>
@@ -184,7 +177,7 @@
           </div>
 
           <!-- MARKETS LIST CONTAINER (WHITE CARDS) -->
-          <div id="markets-container" class="space-y-3">
+          <div id="markets-container" class="space-y-3 w-full">
             <!-- Market cards populated dynamically by app.js -->
           </div>
         </section>
@@ -217,33 +210,33 @@
         <hr class="border-t-2 border-black my-6 opacity-100" style="border-color: #000000;" />
 
         <!-- DEDICATED NEW GHAZIABAD SPOTLIGHT SECTION (MOVED TO BOTTOM) -->
-        <section class="bg-white rounded-2xl border-2 border-amber-400 p-4 sm:p-5 shadow-sm space-y-3 relative overflow-hidden">
+        <section class="bg-white rounded-2xl border-2 border-amber-400 p-3.5 sm:p-5 shadow-sm space-y-3 relative overflow-hidden w-full">
           <div class="flex items-center justify-between flex-wrap gap-2 pb-2.5 border-b border-amber-100">
-            <div class="flex items-center gap-2">
-              <span class="text-base sm:text-lg">🎯</span>
-              <div>
-                <h2 class="text-sm sm:text-base font-black text-slate-950 uppercase tracking-wide">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-base sm:text-lg shrink-0">🎯</span>
+              <div class="min-w-0">
+                <h2 class="text-xs sm:text-base font-black text-slate-950 uppercase tracking-wide truncate">
                   New Ghaziabad Satta Result Today
                 </h2>
-                <span class="text-[11px] text-slate-500 font-semibold block">
+                <span class="text-[10px] sm:text-[11px] text-slate-500 font-semibold block">
                   Daily Draw Schedule: <strong id="home-ng-draw-time" class="text-slate-900 font-bold">09:45 PM</strong>
                 </span>
               </div>
             </div>
-            <span id="home-ng-status-badge" class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+            <span id="home-ng-status-badge" class="shrink-0 text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
               ⚡ Live Market Updates
             </span>
           </div>
 
           <div class="flex items-center justify-between gap-3 flex-wrap pt-1">
-            <div class="space-y-1.5 flex-1 min-w-[200px]">
+            <div class="space-y-1.5 flex-1 min-w-0">
               <p class="text-xs text-slate-600 leading-snug">
                 Check the latest <strong class="text-slate-900 font-bold">New Ghaziabad Satta Result</strong>, previous winning numbers, and date-wise trends.
               </p>
-              <div class="flex flex-wrap items-center gap-2 pt-1">
+              <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 pt-1">
                 <a href="/new-ghaziabad.html" class="inline-flex items-center gap-1 text-[11px] font-black uppercase bg-amber-400 hover:bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg border border-amber-500 shadow-2xs transition-colors">
-                  <span>🎯 Dedicated New Ghaziabad Page</span>
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <span>🎯 New Ghaziabad Page</span>
+                  <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
                   </svg>
                 </a>
@@ -264,19 +257,19 @@
             </div>
 
             <!-- Result Boxes -->
-            <div class="flex items-center gap-2.5 shrink-0">
+            <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0 ml-auto">
               <!-- Yesterday -->
-              <div class="flex flex-col items-center justify-center bg-slate-100 p-2 sm:p-2.5 rounded-xl border border-slate-200 min-w-[70px] sm:min-w-[80px]">
-                <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-1">Yesterday</span>
-                <div id="home-ng-yesterday-num" class="w-13 sm:w-16 h-11 sm:h-14 bg-white border border-slate-300 text-slate-800 rounded-lg flex items-center justify-center font-mono font-black text-xl sm:text-2xl shadow-2xs">
+              <div class="flex flex-col items-center justify-center bg-slate-100 p-1.5 sm:p-2.5 rounded-xl border border-slate-200 min-w-[60px] sm:min-w-[80px]">
+                <span class="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-slate-500 mb-0.5 sm:mb-1">Yesterday</span>
+                <div id="home-ng-yesterday-num" class="w-12 sm:w-16 h-10 sm:h-14 bg-white border border-slate-300 text-slate-800 rounded-lg flex items-center justify-center font-mono font-black text-xl sm:text-2xl shadow-2xs">
                   --
                 </div>
               </div>
 
               <!-- Today -->
-              <div class="flex flex-col items-center justify-center bg-amber-100/90 p-2 sm:p-2.5 rounded-xl border border-amber-300 min-w-[70px] sm:min-w-[80px]">
-                <span class="text-[10px] font-black uppercase tracking-wider text-amber-950 mb-1">Today</span>
-                <div id="home-ng-today-num" class="w-13 sm:w-16 h-11 sm:h-14 bg-slate-900 border border-slate-800 text-amber-400 rounded-lg flex items-center justify-center font-mono font-black text-2xl sm:text-3xl shadow-xs">
+              <div class="flex flex-col items-center justify-center bg-amber-100/90 p-1.5 sm:p-2.5 rounded-xl border border-amber-300 min-w-[60px] sm:min-w-[80px]">
+                <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-amber-950 mb-0.5 sm:mb-1">Today</span>
+                <div id="home-ng-today-num" class="w-12 sm:w-16 h-10 sm:h-14 bg-slate-900 border border-slate-800 text-amber-400 rounded-lg flex items-center justify-center font-mono font-black text-2xl sm:text-3xl shadow-xs">
                   --
                 </div>
               </div>
@@ -295,9 +288,14 @@
                 Direct links to check full historical record charts for every game market:
               </p>
             </div>
-            <a href="/chart" class="text-xs font-black text-amber-700 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 px-3 py-1.5 rounded-xl transition-colors">
-              📋 All Markets Matrix Chart →
-            </a>
+            <div class="flex items-center gap-2 flex-wrap">
+              <a href="/chart?fullscreen=true" class="text-xs font-black text-slate-950 bg-amber-400 hover:bg-amber-300 border border-amber-500 px-3 py-1.5 rounded-xl transition-all shadow-xs inline-flex items-center gap-1.5 active:scale-95">
+                <span>⛶</span> Fullscreen Matrix Chart
+              </a>
+              <a href="/chart" class="text-xs font-black text-amber-800 hover:text-amber-900 bg-amber-100/80 hover:bg-amber-200 border border-amber-300 px-3 py-1.5 rounded-xl transition-colors">
+                📋 All Markets Matrix →
+              </a>
+            </div>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
@@ -352,7 +350,7 @@
               How to Check New Ghaziabad Result Today
             </h3>
             <p>
-              Visitors can track the <strong class="text-gray-900 font-bold">New Ghaziabad Result Today</strong> in real-time as soon as the scheduled draw is finalized at 09:45 PM IST. Our system connects directly to the cloud database, reflecting official opening numbers with zero lag. You can view the <strong class="text-gray-900 font-bold">New Ghaziabad Live Result</strong> above or switch to our <a href="/new-ghaziabad.html" class="text-amber-700 hover:text-amber-800 font-bold underline">dedicated New Ghaziabad section</a> for an in-depth date-by-date breakdown.
+              Visitors can track the <strong class="text-gray-900 font-bold">New Ghaziabad Result Today</strong> in real-time as soon as the scheduled draw is finalized at 09:45 PM IST on official result website <strong class="text-gray-900 font-bold">Newgaziabadresult.vercel.app</strong>. Our system connects directly to the cloud database, reflecting official opening numbers with zero lag. You can view the <strong class="text-gray-900 font-bold">New Ghaziabad Live Result</strong> above or switch to our <a href="/new-ghaziabad.html" class="text-amber-700 hover:text-amber-800 font-bold underline">dedicated New Ghaziabad section</a> for an in-depth date-by-date breakdown.
             </p>
           </section>
 
@@ -383,8 +381,9 @@
     </main>
 
     <!-- SIMPLE FOOTER -->
-    <footer class="py-6 text-center text-xs text-gray-500 font-medium border-t border-gray-200 mt-auto shrink-0 bg-white">
+    <footer class="py-6 text-center text-xs text-gray-500 font-medium border-t border-gray-200 mt-auto shrink-0 bg-white space-y-1">
       <p>© 2026 NEW GAZIABAD. All Rights Reserved.</p>
+      <p class="font-bold text-slate-700">Official Result Website: <a href="https://newgaziabadresult.vercel.app" class="text-amber-600 hover:text-amber-700 underline font-black">Newgaziabadresult.vercel.app</a></p>
     </footer>
 
     <!-- FLOATING REFRESH BUTTON (Bottom Right) -->

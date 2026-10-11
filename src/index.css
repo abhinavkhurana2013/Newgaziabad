@@ -1,5 +1,29 @@
 @import "tailwindcss";
 
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+  position: relative;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+img, svg, video, canvas, audio, iframe, embed, object {
+  max-width: 100%;
+}
+
 @layer utilities {
   @keyframes fadeIn {
     from {
@@ -159,5 +183,30 @@
 
 .market-card:hover {
   transform: translateY(-2px);
+}
+
+/* Fullscreen All Markets Matrix Chart Mode */
+.matrix-fullscreen-active {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background-color: #020617 !important; /* bg-slate-950 */
+}
+
+.matrix-fullscreen-active .matrix-table-scroll {
+  flex: 1 1 0% !important;
+  height: 100% !important;
+  max-height: none !important;
+  overflow: auto !important;
 }
 
