@@ -847,6 +847,25 @@ function renderMarketCards(markets, dateResultsMap, prevDateResultsMap, shouldAn
 
     container.appendChild(card);
 
+    // After every two market cards, insert CLICK HERE button opening target link
+    if ((index + 1) % 2 === 0) {
+      const clickHereContainer = document.createElement('div');
+      clickHereContainer.className = 'w-full py-1.5 flex items-center justify-center';
+      clickHereContainer.innerHTML = `
+        <a 
+          href="https://uplcm.com/4/12211495" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400 hover:from-amber-300 hover:via-amber-400 hover:to-amber-300 text-slate-950 font-black text-center text-sm sm:text-base tracking-wider uppercase border-2 border-amber-500 shadow-md hover:shadow-lg active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <span>👉</span>
+          <span>CLICK HERE</span>
+          <span>👈</span>
+        </a>
+      `;
+      container.appendChild(clickHereContainer);
+    }
+
     // If drawing animation requested, start fast numbers draw!
     if (shouldAnimate) {
       const todaySpan = card.querySelector('[data-today-box] .market-number-span');
